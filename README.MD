@@ -28,6 +28,7 @@ Bashbullet2
    
 	# 2. edit $HOME/.bashbullet2/config.json and put your access token in this file   
 	# 3. edit $HOME/.bashbullet2/handler_config according to your preference   
+	# 4. scripting can be easily done by editing $HOME/.bashbullet/handler/*   
    
 ### Run:   
 	# To receive notification   
