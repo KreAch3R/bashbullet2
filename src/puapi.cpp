@@ -29,11 +29,24 @@ string get_raw_json(string apikey,string url){
 	}
 	return readBuffer;
 }
+string get_cursor_pushes(string apikey,string cursor){
+	string url="https://api.pushbullet.com/v2/pushes?active=true&cursor="+cursor;
+	return get_raw_json(apikey, url);
+}
+
+string get_n_pushes(string apikey,int n){
+	string limit=to_string(n);
+	string url="https://api.pushbullet.com/v2/pushes?active=true&limit="+limit;
+	return get_raw_json(apikey, url);
+}
 string get_pushes(string apikey,string lasttime){
 	string url="https://api.pushbullet.com/v2/pushes?active=true&modified_after="+lasttime;
 	return get_raw_json(apikey, url);
 }
-
+string get_cursor_devices(string apikey,string cursor){
+	string url="https://api.pushbullet.com/v2/devices?active=true&cursor="+cursor;
+	return get_raw_json(apikey, url);
+}
 string get_devices(string apikey){
 	string url="https://api.pushbullet.com/v2/devices?active=true";
 	return get_raw_json(apikey, url);

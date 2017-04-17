@@ -7,6 +7,8 @@
 #include <json/json.h>
 #include <cpprest/ws_client.h>
 
+#include <unistd.h>
+
 #include "misc.h"
 #include "puapi.h"
 
@@ -113,19 +115,46 @@ int main() {
 	if( ! JStmp["body_max_length"].isNull() ) maxbody=stoi( JStmp["body_max_length"].asString() );
 	timestamp=get_timestamp(ftimestamp);
 
-	// parse device
+	// Getting devices
+	string rawdev;
+	for(int trial=1; trial<=2; trial++ ){
+		rawdev=get_devices(apikey);
+		if( rawdev != "" ) break;
+		else if(trial == 2 ){
+			cout << "ERROR: fail to get devices list. Connection issue ? \n";
+			return 0;
+		}
+		sleep(5);
+	}
+	// Parse devices, get more devices if device list has multiple pages (cursor)
+	// (arbitrarily setting a max 10-cursor limit)
+        JStmp = str_json( rawdev );
 	vector<string> sms_capab;
-        JStmp = str_json( get_devices(apikey) );
-        int index=0;
-        for( Json::ValueIterator it = JStmp["devices"].begin() ; it != JStmp["devices"].end() ; it++, index++ ){
-		iden2devname[ JStmp["devices"][ index ]["iden"].asString() ] = JStmp["devices"][ index ]["nickname"].asString();
-		if( JStmp["devices"][ index ]["has_sms"].asBool() ) sms_capab.push_back( JStmp["devices"][ index ]["nickname"].asString() );
-        }
+	for(int i=0; i<10; i++){
+	        int index=0;
+	        for( Json::ValueIterator it = JStmp["devices"].begin() ; it != JStmp["devices"].end() ; it++, index++ ){
+			iden2devname[ JStmp["devices"][ index ]["iden"].asString() ] = JStmp["devices"][ index ]["nickname"].asString();
+			if( JStmp["devices"][ index ]["has_sms"].asBool() ) sms_capab.push_back( JStmp["devices"][ index ]["nickname"].asString() );
+	        }
+		string cursor = JStmp["cursor"].asString();
+	        if( cursor=="" ) break;
+		else JStmp = str_json( get_cursor_devices(apikey, cursor) );
+	}
+
+	bool has_bashbullet=false;
+	for(auto& kv:iden2devname)
+		if( kv.second == "bashbullet" ) has_bashbullet=true;
+	if(has_bashbullet=false){
+		cout << "ERROR: bashbullet device does not exist. \n";
+		cout << "Run \"create_device.sh\" once if it's never been done. ::  \n";
+		return 0;
+	}
+
 	// save device cache for YAD GUI
 	save_devices( iden2devname , pdir ,sms_capab );
 
 	// begin websocket
-	while(1){
+	for(int retry=0; retry<2; retry++){
 		websocket_client client;
 		try{
 			client.connect("wss://stream.pushbullet.com/websocket/"+apikey ).wait();
@@ -145,15 +174,17 @@ int main() {
 
 					}).wait();
 				}catch(const std::exception &e){
+					// break loop and reconnect when encountering an error
 					printf("Error exception:%s\n", e.what());
 					break;
 				}
 			}
 		}catch(const std::exception &e){
+			// if failed to re-connect (give up at 2nd failure);
 			printf("Error exception:%s\n", e.what());
-			break;
 		}
 		client.close().then([](){ /* close connection and retry */ });
+		sleep(5);
 	}
 
 	return 0;

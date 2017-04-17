@@ -27,12 +27,15 @@ Bashbullet2
 	cp -a ./config_dir $HOME/.bashbullet2   
    
 	# 2. edit $HOME/.bashbullet2/config.json and put your access token in this file   
-	# 3. edit $HOME/.bashbullet2/handler_config according to your preference   
-	# 4. scripting can be easily done by editing $HOME/.bashbullet/handler/*   
+	# 3. run create_devices.sh ONCE to create bashbullet device ( skip this step if upgrade from old bashbullet)   
+	$HOME/.bashbullet2/lib/create_device.sh   
+   
+	# 4. edit $HOME/.bashbullet2/handler_config according to your preference   
+	# 5. scripting can be easily done by editing $HOME/.bashbullet/handler/*   
    
 ### Run:   
 	# To receive notification   
 	./libbashbullet   
    
 	# (Optional) to write a new push   
-	./new_push.sh   
+	$HOME/.bashbullet2/handler/new_push.sh   
