@@ -14,10 +14,9 @@ using namespace std;
 using namespace web;
 using namespace web::websockets::client;
 
-string pdir=getenv("HOME");
-string ftimestamp, timestamp;
+int maxtitle=50, maxbody=160;
 map<string,string> iden2devname;
-string apikey;
+string pdir=getenv("HOME"), apikey, ftimestamp, timestamp;
 
 void handler(Json::Value& M ){
         string type=M["type"].asString();
@@ -44,8 +43,8 @@ void handler(Json::Value& M ){
 				if( PU[2] == "" ) PU[2] = "ALL\n";
 
 				// max length of title & body
-        	                if( PU[3].size() > 50  ) PU[3] = utf8_cut( PU[3], 50 ) + "....";
-        	                if( PU[0].size() > 160 ) PU[0] = utf8_cut( PU[0], 160);
+        	                if( PU[3].size() > maxtitle  ) PU[3] = utf8_cut( PU[3], maxtitle ) + "....";
+        	                if( PU[0].size() > maxbody ) PU[0] = utf8_cut( PU[0], maxbody ) + "....";
 
 				cout << endl << "pushes: " << PU[1] << '>' << PU[2] << " :: " << PU[3] << endl;
 
@@ -72,8 +71,8 @@ void handler(Json::Value& M ){
 				PU[i] = M["push"][ RAW[i] ].asString();
 
 			PU[1] = iden2devname[ PU[1] ];
-                        if( PU[3].size() > 50  ) PU[3] = utf8_cut( PU[3], 50 ) + "....";
-                        if( PU[0].size() > 160 ) PU[0] = utf8_cut( PU[0], 160);
+                        if( PU[3].size() > maxtitle  ) PU[3] = utf8_cut( PU[3], maxtitle ) + "....";
+                        if( PU[0].size() > maxbody ) PU[0] = utf8_cut( PU[0], maxbody ) + "....";
 
 			for(auto& s:PU)	sanitize(s);
 			string cmd=pdir+"handler/mirror.sh";
@@ -110,7 +109,8 @@ int main() {
 		cout << " Access-Token is missing, stopping now. \n";
 		return 0;
 	}
-
+	if( ! JStmp["title_max_length"].isNull() ) maxtitle=stoi( JStmp["title_max_length"].asString() );
+	if( ! JStmp["body_max_length"].isNull() ) maxbody=stoi( JStmp["body_max_length"].asString() );
 	timestamp=get_timestamp(ftimestamp);
 
 	// parse device
@@ -134,11 +134,11 @@ int main() {
 					client.receive().then([](websocket_incoming_message in_msg) {
 						return in_msg.extract_string();
 					}).then([](string wsmsg) {
-						// debug
+/*						// debug
 						string fdebug="/tmp/rawmsg";
 				        	ofstream rawdeb(fdebug.c_str(), std::ofstream::out | std::ofstream::app);
 						rawdeb << wsmsg << "\n";
-
+*/
 						// parse
 						Json::Value M=str_json(wsmsg);
 					        handler(M);
