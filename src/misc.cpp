@@ -42,9 +42,14 @@ void update_timestamp(string ftimestamp,string& timestamp){
 }
 
 string get_timestamp(string ftimestamp){
+	// check if file exist and read the timestamp
 	string timestamp;
         ifstream is(ftimestamp.c_str());
-        is >> timestamp;
+	if( is.good() ){
+	        is >> timestamp;
+	}else{
+		timestamp = to_string( std::time(nullptr) );
+	}
         is.close();
 	return timestamp;
 }
