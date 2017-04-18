@@ -54,6 +54,7 @@ string get_timestamp(string ftimestamp){
 	        is >> timestamp;
 	}else{
 		timestamp = to_string( std::time(nullptr) );
+		update_timestamp(ftimestamp,timestamp);
 	}
 	is.close();
 	return timestamp;
