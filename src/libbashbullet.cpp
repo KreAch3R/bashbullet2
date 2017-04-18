@@ -58,11 +58,10 @@ void handler(Json::Value& M ){
 				else
 		                        cmds="cat <<< '"+ PU[0] +"'|" + cmd + " \"" + type + "\" \"" + PU[1] + "\" \"" + PU[2] + "\" \"" + PU[3] + "\" &";
         	                system( cmds.c_str() );
-
-				// will update both timestamp variable write it to file
-				update_timestamp(ftimestamp, timestamp);
-				if(systray) update_icon(traypipe);
 			}
+			// will update both timestamp variable write it to file
+			update_timestamp(ftimestamp, timestamp);
+			if(systray) update_icon(traypipe);
 		}
         }else if( type == "push" ){
                 type = M["push"]["type"].asString();

@@ -3,10 +3,15 @@ Bashbullet2
  Bashbullet2 is a pushbullet notification daemon for pushes and Phone-PC notification mirrorring.
  A simple GUI for sending push is also included.
   
- This is the development version of Bashbullet.
- I've yet to decide what function should be included in this new version.
- The old one is ugly and full of bugs and will eventually be replaced.
+ The old version of bashbullet is ugly, full of bugs and will eventually be replaced.
  Most of the core functions will be rewritten in C++, but the scripting capability will still be supported.
+
+### Feature :   
+	receive, send, mirror pushes and send files.   
+	send sms from bashbullet through phone.   
+	copy texts from phone's clipboard.   
+	copy links automatically.   
+	customizable script and notification.   
   
 ### Prerequisite:   
 	libnotify   
@@ -22,7 +27,7 @@ Bashbullet2
 	cd src   
 	make   
    
-### Install:   
+### Configuration:   
 	# 1. copy "config_dir" to $HOME and rename to .bashbullet2   
 	cp -a ./config_dir $HOME/.bashbullet2   
    
