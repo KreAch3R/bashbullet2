@@ -6,6 +6,8 @@ Bashbullet2
  The old version of bashbullet is ugly, full of bugs and will eventually be replaced.
  Most of the core functions will be rewritten in C++, but the scripting capability will still be supported.
 
+![alt tag](https://boteium.github.io/bashbullet2/bashbullet_systray_inbox.png)
+
 ### Feature :   
 	receive, send, mirror pushes and send files.   
 	send sms from bashbullet through phone.   
