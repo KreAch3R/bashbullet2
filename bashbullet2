@@ -15,6 +15,7 @@ exec 3<> $PIPE
 
 # remove on exit
 on_exit() {
+    killall libbashbullet;
     echo "quit" >&3
     rm -f $PIPE
 }
@@ -31,10 +32,10 @@ on_click() {
 }
 export -f on_click
 
+$HOME/.bashbullet2/libbashbullet &
+
 # create yad notification icon
 yad --notification --title bashbullet --listen \
     --image="$HOME/.bashbullet2/lib/pushbullet.svg" \
     --text="click to display new message" \
-    --command="bash -c \"on_click\"" <&3 &
-
-$HOME/.bashbullet2/libbashbullet
+    --command="bash -c \"on_click\"" <&3
