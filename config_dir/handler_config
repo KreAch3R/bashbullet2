@@ -4,5 +4,5 @@
 cp_link=1
 xdg_open=0
 
-notify_command="aplay $HOME/.bashbullet2/audio/bell.wav"
-notify_command_mirror="aplay $HOME/.bashbullet2/audio/message.wav"
+notify_command="aplay $HOME/.bashbullet2/lib/audio/bell.wav"
+notify_command_mirror="aplay $HOME/.bashbullet2/lib/audio/message.wav"

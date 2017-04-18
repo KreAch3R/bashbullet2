@@ -34,8 +34,11 @@ Bashbullet2
 	# 5. scripting can be easily done by editing $HOME/.bashbullet/handler/*   
    
 ### Run:   
-	# To receive notification   
+	# systray with daemon   
+	./bashbullet2   
+   
+	# Or, using standalone daemon without systray to receive notification   
 	./libbashbullet   
    
 	# (Optional) to write a new push   
-	$HOME/.bashbullet2/handler/new_push.sh   
+	$HOME/.bashbullet2/lib/new_push.sh   

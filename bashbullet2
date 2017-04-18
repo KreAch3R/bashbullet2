@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# initialize yad systray icon
+PIPE="$HOME/.bashbullet2/.systray_pipe"
+if [ -e "$PIPE" ];then
+	echo "$PIPE" exist.
+	echo Is another bashbullet instance running already ?
+	echo Remove this file if there isn\'t any other running instance.
+	exit 0
+fi
+
+# make and attach a file descriptor to the file
+mkfifo $PIPE
+exec 3<> $PIPE
+
+# remove on exit
+on_exit() {
+    echo "quit" >&3
+    rm -f $PIPE
+}
+trap on_exit EXIT
+
+
+# add handler for tray icon left click
+on_click() {
+	if ps -ef|grep -e yad |grep "$HOME/.bashbullet2/.show" >/dev/null;then
+		echo duplicated inbox window.
+	else
+		$HOME/.bashbullet2/lib/inbox.sh &
+	fi
+}
+export -f on_click
+
+# create yad notification icon
+yad --notification --title bashbullet --listen \
+    --image="$HOME/.bashbullet2/lib/pushbullet.svg" \
+    --text="click to display new message" \
+    --command="bash -c \"on_click\"" <&3 &
+
+$HOME/.bashbullet2/libbashbullet

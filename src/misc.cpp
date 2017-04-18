@@ -34,6 +34,11 @@ string sanitize(string& in){
         return out;
 }
 
+void update_icon(string pipe){
+	ofstream os(pipe.c_str());
+	os << "icon:mail-unread\n";
+	os.close();
+}
 void update_timestamp(string ftimestamp,string& timestamp){
         timestamp = to_string( std::time(nullptr) );
         ofstream os(ftimestamp.c_str());
@@ -50,7 +55,7 @@ string get_timestamp(string ftimestamp){
 	}else{
 		timestamp = to_string( std::time(nullptr) );
 	}
-        is.close();
+	is.close();
 	return timestamp;
 }
 
@@ -59,6 +64,7 @@ Json::Value file_json(string file){
         Json::Reader reader;
 	Json::Value M;
 	reader.parse(is,M);
+	is.close();
 	return M;
 }
 

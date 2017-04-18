@@ -18,7 +18,8 @@ using namespace web::websockets::client;
 
 int maxtitle=50, maxbody=160;
 map<string,string> iden2devname;
-string pdir=getenv("HOME"), apikey, ftimestamp, timestamp;
+string pdir=getenv("HOME"), apikey, ftimestamp, timestamp, traypipe;
+bool systray=true;
 
 void handler(Json::Value& M ){
         string type=M["type"].asString();
@@ -57,10 +58,12 @@ void handler(Json::Value& M ){
 				else
 		                        cmds="cat <<< '"+ PU[0] +"'|" + cmd + " \"" + type + "\" \"" + PU[1] + "\" \"" + PU[2] + "\" \"" + PU[3] + "\" &";
         	                system( cmds.c_str() );
+
+				// will update both timestamp variable write it to file
+				update_timestamp(ftimestamp, timestamp);
+				if(systray) update_icon(traypipe);
 			}
 		}
-		// will update both timestamp variable write it to file
-		update_timestamp(ftimestamp, timestamp);
         }else if( type == "push" ){
                 type = M["push"]["type"].asString();
 		if( type == "dismissal"){
@@ -102,6 +105,11 @@ int main() {
 	// env
 	pdir+="/.bashbullet2/";
 	ftimestamp=pdir+".TIMESTAMP", timestamp;
+	traypipe=pdir+".systray_pipe";
+	ifstream is( traypipe.c_str() );
+	if( is.good() ) systray=true;
+	is.close();
+
         Json::Value JStmp;
 
 	// parse config, timestamp
