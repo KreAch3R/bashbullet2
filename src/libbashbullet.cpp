@@ -19,7 +19,7 @@ using namespace web::websockets::client;
 int maxtitle=50, maxbody=160;
 map<string,string> iden2devname;
 string pdir=getenv("HOME"), apikey, ftimestamp, timestamp, traypipe;
-bool systray=true;
+bool systray=true, enable_sms_alert=false;
 
 void handler(Json::Value& M ){
         string type=M["type"].asString();
@@ -64,7 +64,16 @@ void handler(Json::Value& M ){
 			if(systray) update_icon(traypipe);
 		}
         }else if( type == "push" ){
-                type = M["push"]["type"].asString();
+		bool encrypted = M["push"]["encrypted"].asBool();
+		if( encrypted ){
+			cout << "encrypted message" << endl;
+			string cmds="echo |" +pdir + "handler/mirror.sh \"Bashbullet\" \"Warning\" \"End to End encryption is currently not supported\"";
+			system( cmds.c_str());
+			type = "dismissal";
+		}else{
+			type = M["push"]["type"].asString();
+		}
+
 		if( type == "dismissal"){
 			/* do nothimg */
 		}else if( type == "mirror" ){
@@ -89,10 +98,9 @@ void handler(Json::Value& M ){
 			string body = M["push"][ "body" ].asString();
 			string cmd="cat <<< '" + sanitize(body) + "'|" + pdir + "handler/clip.sh";
 			system( cmd.c_str() );
-//		}else if( type == "sms_changed" && enable_sms_alert ){
-		}else if( type == "sms_changed" ){
-			string from=M["push"][ "source_device_iden" ].asString();
-			string cmd="echo |" +pdir + "handler/mirror.sh \"" + sanitize(from) + "\" SMS Received/Sent ";
+		}else if( type == "sms_changed" && enable_sms_alert ){
+			string from= iden2devname[ M["push"][ "source_device_iden" ].asString() ];
+			string cmd="echo |" +pdir + "handler/mirror.sh \"" + sanitize(from) + "\" \"SMS Received/Sent\"";
 			system( cmd.c_str());
 		}
         }
@@ -120,6 +128,7 @@ int main() {
 	}
 	if( ! JStmp["title_max_length"].isNull() ) maxtitle=stoi( JStmp["title_max_length"].asString() );
 	if( ! JStmp["body_max_length"].isNull() ) maxbody=stoi( JStmp["body_max_length"].asString() );
+	if( ! JStmp["enable_sms_alert"].isNull() ) enable_sms_alert=JStmp["enable_sms_alert"].asBool();
 	timestamp=get_timestamp(ftimestamp);
 
 	// Getting devices
