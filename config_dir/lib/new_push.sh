@@ -75,13 +75,11 @@ if [ $? == 2 ] ;then
 			mime=application/octet-stream
 		fi
 		notify-send "Uploading..., please wait" "Sending $FN to ${FILE[0]}"
-		RAW=`curl -s --header "Access-Token: $API_KEY" -X POST https://api.pushbullet.com/v2/upload-request -d file_name="$FNAME" -d file_type=$mime`
-		FURL=`echo $RAW|jshon -e file_url |tr -d '\'|tr -d '"'`
-		UURL=`echo $RAW|jshon -e upload_url |tr -d '\'|tr -d '"'`
-		ARGS=`echo $RAW|jshon -e data |grep :|sed -e 's/["| |,]//g' -e 's/^/-F /'|tr : =`
-		if curl -s -i -X POST $UURL $ARGS -F file=@"${FN}" |grep 'No Content' >/dev/null;then
-			PU `name2iden ${FILE[0]}` file "$FNAME" "$FURL"
-		fi
+                IFS=$'\n'
+                RAW=(`curl -s --header "Access-Token: $API_KEY" -X POST https://api.pushbullet.com/v2/upload-request -d file_name="$FNAME" -d file_type=$mime |"$HOME/.bashbullet2/lib/helper_upload"`)
+                if curl -s "${RAW[0]}" -i -X POST "${RAW[1]}" "${RAW[2]}" -F file=@"${FN}" |grep 'No Content' >/dev/null;then
+                        PU `name2iden ${FILE[0]}` file "$FNAME" "${RAW[0]}"
+                fi
 	fi
 fi
 

@@ -21,7 +21,6 @@ Bashbullet2
 	cpprestsdk  
 	jsoncpp  
 	curl  
-	jshon  
 	yad   
 	xclip (clipboard support)  
     
