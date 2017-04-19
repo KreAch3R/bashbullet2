@@ -15,27 +15,19 @@ exec 3<> $PIPE
 
 # remove on exit
 on_exit() {
-    killall libbashbullet;
-    echo "quit" >&3
-    rm -f $PIPE
+	# killall remaing yad process
+	JobList="$(jobs -p)"
+	if [ ! -z "$JobList" ];then
+		kill $JobList
+	fi
+	rm -f $PIPE
 }
 trap on_exit EXIT
-
-
-# add handler for tray icon left click
-on_click() {
-	if ps -ef|grep -e yad |grep "$HOME/.bashbullet2/.show" >/dev/null;then
-		echo duplicated inbox window.
-	else
-		$HOME/.bashbullet2/lib/inbox.sh &
-	fi
-}
-export -f on_click
-
-$HOME/.bashbullet2/libbashbullet &
 
 # create yad notification icon
 yad --notification --title bashbullet --listen \
     --image="$HOME/.bashbullet2/lib/pushbullet.svg" \
     --text="click to display new message" \
-    --command="bash -c \"on_click\"" <&3
+    --command="$HOME/.bashbullet2/lib/inbox.sh" &
+
+$HOME/.bashbullet2/libbashbullet

@@ -1,3 +1,7 @@
+if ps -ef|grep -e yad |grep "$HOME/.bashbullet2/.show" >/dev/null;then
+	exit 0
+fi
+
 timestamp=`cat $HOME/.bashbullet2/.TIMESTAMP`
 
 if [ ! -f "$HOME/.bashbullet2/.show_${timestamp}" ];then

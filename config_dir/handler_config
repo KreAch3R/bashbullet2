@@ -1,7 +1,12 @@
-## Uncomment this line if running from background.
+## Uncomment this line if running in the background.
 # export DISPLAY=:0
 
 cp_link=1
+
+# Make sure DISPLAY variable is properly configured
+# before setting this option to 1.  Otherwise, xdg-open 
+# might start text-based browser such as elink if 
+# bashbullet is running in the background
 xdg_open=0
 
 notify_command="aplay $HOME/.bashbullet2/lib/audio/bell.wav"

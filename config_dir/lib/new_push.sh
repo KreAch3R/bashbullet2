@@ -66,7 +66,7 @@ if [ $? == 2 ] ;then
 	elif [[ ! -z "${NOTE[1]}" || ! -z "${NOTE[2]}" ]];then
 		[ -z ${NOTE[1]} ] && NOTE[1]="untitled"
                	PU `name2iden "${NOTE[0]}"`  note "${NOTE[1]}" "${NOTE[2]}"
-	else
+	elif [ ! -z "${FILE[0]}" ];then
 		FN=`yad --file --width=550 --height=400 --title "Send a file to ${FILE[0]}"`
 		FNAME=`sed 's/.*\///g' <<< $FN`
 		if echo $FNAME|egrep -i 'png|jpg|jpeg|gif' >/dev/null ;then
