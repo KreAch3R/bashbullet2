@@ -160,7 +160,7 @@ int main() {
 	bool has_bashbullet=false;
 	for(auto& kv:iden2devname)
 		if( kv.second == "bashbullet" ) has_bashbullet=true;
-	if(has_bashbullet=false){
+	if(has_bashbullet == false){
 		cout << "ERROR: bashbullet device does not exist. \n";
 		cout << "Run \"create_device.sh\" once if it's never been done. ::  \n";
 		return 0;
