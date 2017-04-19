@@ -44,7 +44,7 @@ int main(){
 				if(showlen <= 0) break;
 			}
 		}
-		if(showlen <= 0) break;
+		if(showlen <= 0 || cursor == "" ) break;
 		if(showlen && cursor!="" ) M = str_json( get_cursor_pushes(apikey, cursor) );
 	}
 
