@@ -28,6 +28,6 @@ trap on_exit EXIT
 yad --notification --title bashbullet --listen \
     --image="$HOME/.bashbullet2/lib/pushbullet.svg" \
     --text="click to display new message" \
-    --command="$HOME/.bashbullet2/lib/inbox.sh" &
+    --command="$HOME/.bashbullet2/lib/inbox.sh" <&3 &
 
 $HOME/.bashbullet2/libbashbullet
