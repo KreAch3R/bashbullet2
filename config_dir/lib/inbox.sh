@@ -6,7 +6,7 @@ timestamp=`cat $HOME/.bashbullet2/.TIMESTAMP`
 
 if [ ! -f "$HOME/.bashbullet2/.show_${timestamp}" ];then
 	echo Retrieving lastest pushes
-	rm "$HOME/.bashbullet2/.show_*" 2>/dev/null
+	rm "$HOME"/.bashbullet2/.show_* 2>/dev/null
 	"$HOME/.bashbullet2/lib/helper" > "$HOME/.bashbullet2/.show_${timestamp}"
 	printf "\n" >> "$HOME/.bashbullet2/.show_${timestamp}"
 	echo "Click Manage in Browser to show more/delete pushes" >> "$HOME/.bashbullet2/.show_${timestamp}"

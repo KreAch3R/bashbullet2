@@ -16,12 +16,18 @@ using namespace std;
 using namespace web;
 using namespace web::websockets::client;
 
-int maxtitle=50, maxbody=160;
+int maxtitle=50, maxbody=160, loopcount=0;
 map<string,string> iden2devname;
 string pdir=getenv("HOME"), apikey, ftimestamp, timestamp, traypipe;
 bool systray=true, enable_sms_alert=false;
 
 void handler(Json::Value& M ){
+	if( loopcount++ == 6 ){
+		// update timestamp atleast every 3 minutes
+		string cmd="touch "+ftimestamp;
+		system( cmd.c_str() );
+		loopcount=0;
+	}
         string type=M["type"].asString();
         if( type == "nop" ){
                 fprintf(stderr, "nop " );

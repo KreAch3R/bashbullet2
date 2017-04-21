@@ -29,5 +29,28 @@ yad --notification --title bashbullet --listen \
     --image="$HOME/.bashbullet2/lib/pushbullet.svg" \
     --text="click to display new message" \
     --command="$HOME/.bashbullet2/lib/inbox.sh" <&3 &
+yadPID=$!
 
-$HOME/.bashbullet2/libbashbullet
+$HOME/.bashbullet2/libbashbullet &
+libPID=$!
+
+# guard daemon, check every 5 minutes
+while true;do
+	sleep 300;
+	if [ -x /proc/$libPID ];then
+		if ! find ~/.bashbullet2/.TIMESTAMP -amin -5 |grep TIMESTAMP ;then
+			# force restart libbashbullet
+			kill $libPID
+			$HOME/.bashbullet2/libbashbullet &
+			libPID=$!
+		fi
+	else
+		if [ ! -x /proc/$yadPID ];then
+			# exit program
+			break
+		fi
+		# restart libbashbullet on crash
+		$HOME/.bashbullet2/libbashbullet &
+		libPID=$!
+	fi
+done
