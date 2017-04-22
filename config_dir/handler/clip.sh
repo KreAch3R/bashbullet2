@@ -5,5 +5,6 @@ source ~/.bashbullet2/handler_config
 # MSG/BODY
 
 if(( $cp_link ));then
-	cat -|xclip -sel clip
+	# use sed to remove backslash
+	cat -|sed 's/\(\\\)\(.\)/\2/g'|xclip -sel clip
 fi
