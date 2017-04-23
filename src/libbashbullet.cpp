@@ -17,9 +17,10 @@ using namespace web;
 using namespace web::websockets::client;
 
 int maxtitle=50, maxbody=160, loopcount=0;
+vector<string> target_whitelist;
 map<string,string> iden2devname;
 string pdir=getenv("HOME"), apikey, ftimestamp, timestamp, traypipe;
-bool systray=true, enable_sms_alert=false;
+bool systray=true, enable_sms_alert=false, enable_whitelist=false;
 
 void handler(Json::Value& M ){
 	if( loopcount++ == 6 ){
@@ -51,23 +52,33 @@ void handler(Json::Value& M ){
 				if( PU[1] == "" ) PU[1] = tmpM["pushes"][ index ][ "sender_name" ].asString();
 				if( PU[2] == "" ) PU[2] = "ALL\n";
 
-				// max length of title & body
-        	                if( PU[3].size() > maxtitle  ) PU[3] = utf8_cut( PU[3], maxtitle ) + "....";
-        	                if( PU[0].size() > maxbody ) PU[0] = utf8_cut( PU[0], maxbody ) + "....";
+				bool display=false;
+				if(enable_whitelist){
+					for(auto& d:target_whitelist)
+						if( d == PU[2] ) display=true;
+				}else{
+					display=true;
+				}
 
-				cout << endl << "pushes: " << PU[1] << '>' << PU[2] << " :: " << PU[3] << endl;
+				if(display){
+					// max length of title & body
+	        	                if( PU[3].size() > maxtitle  ) PU[3] = utf8_cut( PU[3], maxtitle ) + "....";
+	        	                if( PU[0].size() > maxbody ) PU[0] = utf8_cut( PU[0], maxbody ) + "....";
 
-				for(auto& s:PU)	sanitize(s);
-        	                string cmds, cmd=pdir+"handler/push.sh";
-				if( PU[4] != "" )
-		                        cmds="cat <<< '"+ PU[0] +"'|" + cmd + " \"" + type + "\" \"" + PU[1] + "\" \"" + PU[2] + "\" \"" + PU[3] + "\" \"" + PU[4] + "\" &";
-				else
-		                        cmds="cat <<< '"+ PU[0] +"'|" + cmd + " \"" + type + "\" \"" + PU[1] + "\" \"" + PU[2] + "\" \"" + PU[3] + "\" &";
-        	                system( cmds.c_str() );
+					cout << endl << "pushes: " << PU[1] << '>' << PU[2] << " :: " << PU[3] << endl;
+
+					for(auto& s:PU)	sanitize(s);
+	        	                string cmds, cmd=pdir+"handler/push.sh";
+					if( PU[4] != "" )
+			                        cmds="cat <<< '"+ PU[0] +"'|" + cmd + " \"" + type + "\" \"" + PU[1] + "\" \"" + PU[2] + "\" \"" + PU[3] + "\" \"" + PU[4] + "\" &";
+					else
+			                        cmds="cat <<< '"+ PU[0] +"'|" + cmd + " \"" + type + "\" \"" + PU[1] + "\" \"" + PU[2] + "\" \"" + PU[3] + "\" &";
+	        	                system( cmds.c_str() );
+					if(systray) update_icon(traypipe);
+				}
 			}
-			// will update both timestamp variable write it to file
+			// will update timestamp variable and write it to file
 			update_timestamp(ftimestamp, timestamp);
-			if(systray) update_icon(traypipe);
 		}
         }else if( type == "push" ){
 		bool encrypted = M["push"]["encrypted"].asBool();
@@ -135,6 +146,13 @@ int main() {
 	if( ! JStmp["title_max_length"].isNull() ) maxtitle=stoi( JStmp["title_max_length"].asString() );
 	if( ! JStmp["body_max_length"].isNull() ) maxbody=stoi( JStmp["body_max_length"].asString() );
 	if( ! JStmp["enable_sms_alert"].isNull() ) enable_sms_alert=JStmp["enable_sms_alert"].asBool();
+        if( ! JStmp["enable_whitelist"].isNull() ) enable_whitelist=JStmp["enable_whitelist"].asBool();
+
+	if( enable_whitelist ){
+	        for(auto& v:JStmp["target_whitelist"])
+	                target_whitelist.push_back( v.asString() );
+	}
+
 	timestamp=get_timestamp(ftimestamp);
 
 	// Getting devices

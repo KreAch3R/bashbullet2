@@ -15,7 +15,7 @@ int main(){
 	Json::Value M = str_json( get_n_pushes(apikey, 1000) );
 
 	int showlen=10;
-	while(1){
+	for(int j=0; j<8; j++){
 	        string cursor = M["cursor"].asString();
 		int index=0;
 		for( Json::ValueIterator it = M["pushes"].begin() ; it != M["pushes"].end() ; it++, index++ ){
@@ -45,6 +45,7 @@ int main(){
 			}
 		}
 		if(showlen <= 0 || cursor == "" ) break;
+		if( j == 7 && showlen >0 ) cout << "Stop retrieving... There might be more pushes, but bashbullet had already searched for 8 pages\n";
 		if(showlen && cursor!="" ) M = str_json( get_cursor_pushes(apikey, cursor) );
 	}
 
