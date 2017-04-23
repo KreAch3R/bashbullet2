@@ -45,8 +45,11 @@ int main(){
 			}
 		}
 		if(showlen <= 0 || cursor == "" ) break;
-		if( j == 7 && showlen >0 ) cout << "Stop retrieving... There might be more pushes, but bashbullet had already searched for 8 pages\n";
-		if(showlen && cursor!="" ) M = str_json( get_cursor_pushes(apikey, cursor) );
+		if( j == 7 && showlen >0 ){
+			cout << "Stop retrieving... There might be more pushes, but bashbullet had already searched for 8 pages\n";
+		}else{
+			if(showlen && cursor!="" ) M = str_json( get_cursor_pushes(apikey, cursor) );
+		}
 	}
 
 	return 0;
