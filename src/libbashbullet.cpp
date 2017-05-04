@@ -40,11 +40,14 @@ void handler(Json::Value& M ){
 			if( dismissed == false ){
 				type = tmpM["pushes"][ index ][ "type" ].asString();
 
-				vector<string> PU(5);		// 0body 1from 2to 3title 4url
-				vector<string> RAW={"body","source_device_iden","target_device_iden","title","url"};
+				vector<string> PU(7);		// 0body 1from 2to 3title 4url 5fileurl 6imageurl
+				vector<string> RAW={"body","source_device_iden","target_device_iden","title","url","file_url","image_url"};
 
 				for(int i=0,sz=RAW.size(); i<sz; i++)
 					PU[i] = tmpM["pushes"][ index ][ RAW[i] ].asString();
+
+				if( PU[5] != "" ) PU[4]=PU[5];
+				if( PU[6] != "" ) PU[4]=PU[5];
 
 				// decode identity
 				PU[1] = iden2devname[ PU[1] ];
@@ -153,8 +156,6 @@ int main() {
 	                target_whitelist.push_back( v.asString() );
 	}
 
-	timestamp=get_timestamp(ftimestamp);
-
 	// Getting devices
 	string rawdev;
 	for(int trial=1; trial<=2; trial++ ){
@@ -192,6 +193,12 @@ int main() {
 
 	// save device cache for YAD GUI
 	save_devices( iden2devname , pdir ,sms_capab );
+
+	// force refresh on start up
+	timestamp = to_string( std::time(nullptr) );
+	update_timestamp(ftimestamp,timestamp);
+	Json::Value M=str_json("{ \"subtype\": \"push\", \"type\": \"tickle\" }");
+	handler(M);
 
 	// begin websocket
 	for(int retry=0; retry<2; retry++){

@@ -8,8 +8,6 @@ using namespace std;
 void update_timestamp(string, string&);
 void update_icon(string);
 
-string get_timestamp(string);
-
 string utf8_cut(string&, int);
 
 string sanitize(string& in);

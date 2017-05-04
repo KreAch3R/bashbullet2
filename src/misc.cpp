@@ -46,20 +46,6 @@ void update_timestamp(string ftimestamp,string& timestamp){
         os.close();
 }
 
-string get_timestamp(string ftimestamp){
-	// check if file exist and read the timestamp
-	string timestamp;
-        ifstream is(ftimestamp.c_str());
-	if( is.good() ){
-	        is >> timestamp;
-	}else{
-		timestamp = to_string( std::time(nullptr) );
-		update_timestamp(ftimestamp,timestamp);
-	}
-	is.close();
-	return timestamp;
-}
-
 Json::Value file_json(string file){
         ifstream is(file.c_str());
         Json::Reader reader;

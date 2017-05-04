@@ -23,11 +23,14 @@ int main(){
 	                 if( dismissed == false ){
 	                        string type = M["pushes"][ index ][ "type" ].asString();
 
-	                        vector<string> PU(5);           // 0body 1from 2to 3title 4url
-	                        vector<string> RAW={"body","source_device_iden","target_device_iden","title","url"};
+                                vector<string> PU(7);           // 0body 1from 2to 3title 4url 5fileurl 6imageurl
+                                vector<string> RAW={"body","source_device_iden","target_device_iden","title","url","file_url","image_url"};
 
 	                        for(int i=0,sz=RAW.size(); i<sz; i++)
 	                                PU[i] = M["pushes"][ index ][ RAW[i] ].asString();
+
+                                if( PU[5] != "" ) PU[4]=PU[5];
+                                if( PU[6] != "" ) PU[4]=PU[5];
 
 	                        // length of title & body
 				PU[3]+="                              ";
