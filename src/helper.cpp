@@ -20,8 +20,8 @@ int main(){
 		int index=0;
 		for( Json::ValueIterator it = M["pushes"].begin() ; it != M["pushes"].end() ; it++, index++ ){
 	                 bool dismissed = M["pushes"][ index ]["dismissed"].asBool();
-	                 if( dismissed == false ){
-	                        string type = M["pushes"][ index ][ "type" ].asString();
+			 string type = M["pushes"][ index ][ "type" ].asString();
+	                 if( dismissed == false || type=="file"){
 
                                 vector<string> PU(7);           // 0body 1from 2to 3title 4url 5fileurl 6imageurl
                                 vector<string> RAW={"body","source_device_iden","target_device_iden","title","url","file_url","image_url"};
