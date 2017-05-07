@@ -47,7 +47,7 @@ void handler(Json::Value& M ){
 					PU[i] = tmpM["pushes"][ index ][ RAW[i] ].asString();
 
 				if( PU[5] != "" ) PU[4]=PU[5];
-				if( PU[6] != "" ) PU[4]=PU[5];
+				if( PU[6] != "" ) PU[4]=PU[6];
 
 				// decode identity
 				PU[1] = iden2devname[ PU[1] ];

@@ -30,7 +30,7 @@ int main(){
 	                                PU[i] = M["pushes"][ index ][ RAW[i] ].asString();
 
                                 if( PU[5] != "" ) PU[4]=PU[5];
-                                if( PU[6] != "" ) PU[4]=PU[5];
+                                if( PU[6] != "" ) PU[4]=PU[6];
 
 	                        // length of title & body
 				PU[3]+="                              ";

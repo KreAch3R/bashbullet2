@@ -19,7 +19,6 @@ Bashbullet2
 	libnotify   
 	websocketpp  
 	cpprestsdk  
-	jsoncpp  
 	curl  
 	yad   
 	xclip (clipboard support)  
