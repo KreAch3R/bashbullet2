@@ -9,14 +9,21 @@
 using namespace std;
 
 string utf8_cut(string& in, int end){
-        int ascii_len=0;
-        for(int i=0; i<end; i++)
-                if(isprint(in[i])) ascii_len++;
-        end = (end+ascii_len+1)/2;
-
         u32string tmp = boost::locale::conv::utf_to_utf<char32_t>(in);
-        tmp = tmp.substr(0,end);
-        return boost::locale::conv::utf_to_utf<char>( tmp );
+
+        int cut=0, len=0;
+	for(len=0; len<end; cut++){
+		if ( tmp[cut] >31 && tmp[cut] < 127 ) len++;
+		else len+=2;
+	}
+
+	if( len > end){
+		tmp=tmp.substr( 0, cut-1 );
+		return boost::locale::conv::utf_to_utf<char>( tmp ) + ' ';
+	}else{
+		tmp=tmp.substr( 0, cut );
+		return boost::locale::conv::utf_to_utf<char>( tmp ) ;
+	}
 }
 
 string sanitize(string& in){
