@@ -77,9 +77,9 @@ if [ $? == 2 ] ;then
 		notify-send "Uploading..., please wait" "Sending $FN to ${FILE[0]}"
                 IFS=$'\n'
                 RAW=(`curl -s --header "Access-Token: $API_KEY" -X POST https://api.pushbullet.com/v2/upload-request -d file_name="$FNAME" -d file_type=$mime |"$HOME/.bashbullet2/lib/helper_upload"`)
-                if curl -s "${RAW[0]}" -i -X POST "${RAW[1]}" "${RAW[2]}" -F file=@"${FN}" |grep 'No Content' >/dev/null;then
-                        PU `name2iden ${FILE[0]}` file "$FNAME" "${RAW[0]}"
-                fi
+
+		curl -s "${RAW[0]}" -i -X POST "${RAW[1]}" "${RAW[2]}" -F file=@"${FN}"
+                PU `name2iden ${FILE[0]}` file "$FNAME" "${RAW[0]}"
 	fi
 fi
 
