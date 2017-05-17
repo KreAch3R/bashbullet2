@@ -37,7 +37,7 @@ int main(){
 	                        PU[3] = utf8_cut( PU[3], 30 );
 
 				if( PU[0] != ""){
-		                        PU[0] = utf8_cut( PU[0], 100 ) + "...";
+					if( type != "file" ) PU[0] = utf8_cut( PU[0], 100 ) + "...";
 		                        cout << type << ": " << PU[3] << " :: " << PU[0] << endl;
 				}else{
 		                        cout << type << ": " << PU[3] << " :: " << PU[4] << endl;
