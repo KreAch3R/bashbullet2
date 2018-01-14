@@ -5,16 +5,24 @@
 
 #include <cstdlib>
 #include <json/json.h>
-#include <cpprest/ws_client.h>
 
 #include <unistd.h>
 
 #include "misc.h"
 #include "puapi.h"
 
+#include <websocketpp/config/asio_client.hpp>
+#include <websocketpp/client.hpp>
+
 using namespace std;
-using namespace web;
-using namespace web::websockets::client;
+
+
+typedef websocketpp::client<websocketpp::config::asio_tls_client> client;
+using websocketpp::lib::placeholders::_1;
+using websocketpp::lib::placeholders::_2;
+using websocketpp::lib::bind;
+typedef websocketpp::config::asio_client::message_type::ptr message_ptr;
+
 
 int maxtitle=50, maxbody=160, loopcount=0;
 vector<string> target_whitelist;
@@ -127,6 +135,11 @@ void handler(Json::Value& M ){
 
 }
 
+// call back function for libwebsocketpp client
+void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
+	Json::Value M=str_json(msg->get_payload());
+        handler(M);
+}
 
 int main() {
 	// env
@@ -200,46 +213,38 @@ int main() {
 	Json::Value M=str_json("{ \"subtype\": \"push\", \"type\": \"tickle\" }");
 	handler(M);
 
-	// begin websocket
-	for(int retry=0; retry<2; retry++){
-		websocket_client client;
-		try{
-			client.connect("wss://stream.pushbullet.com/websocket/"+apikey ).wait();
-			while(1){
-				try{
-					client.receive().then([](websocket_incoming_message in_msg) {
-						return in_msg.extract_string();
-					}).then([](string wsmsg) {
-/*						// debug
-						string fdebug="/tmp/rawmsg";
-				        	ofstream rawdeb(fdebug.c_str(), std::ofstream::out | std::ofstream::app);
-						rawdeb << wsmsg << "\n";
-*/
-						// parse
-						Json::Value M=str_json(wsmsg);
-					        handler(M);
+	// begin initialize websocket client
+	client c;
+	// tls handler for libwebsocketpp
+	c.set_tls_init_handler([](websocketpp::connection_hdl) {
+		return websocketpp::lib::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tlsv1);
+	});
 
-					}).wait();
-				}catch(const std::exception &e){
-					// break loop and reconnect when encountering an error
-					printf("Error exception:%s\n", e.what());
-					break;
-				}
-			}
-		}catch(const std::exception &e){
-			// if failed to re-connect (give up at 2nd failure);
-			printf("Error exception:%s\n", e.what());
-		}
-		client.close().then([](){ /* close connection and retry */ });
-		sleep(5);
+	std::string uri = "wss://websocket.pushbullet.com/subscribe/"+apikey;
+
+	try {
+		c.init_asio();
+		// Register our message handler
+		c.set_message_handler(bind(&on_message,&c,::_1,::_2));
+
+		websocketpp::lib::error_code ec;
+		client::connection_ptr con = c.get_connection(uri, ec);
+		if (ec) {
+			std::cout << "could not create connection because: " << ec.message() << std::endl;
+		return 0;
+	        }
+
+	        // Note that connect here only requests a connection. No network messages are
+	        // exchanged until the event loop starts running in the next line.
+	        c.connect(con);
+	        // Start the ASIO io_service run loop
+	        // this will cause a single connection to be made to the server. c.run()
+	        // will exit when this connection is closed.
+	        c.run();
+	} catch (websocketpp::exception const & e) {
+		std::cout << e.what() << std::endl;
 	}
 
 	return 0;
 }
 
-/*
-// write to websocket ?? Ephermeral from PC ??
-  websocket_outgoing_message out_msg;
-  out_msg.set_utf8_message("test");
-  client.send(out_msg).wait();
-*/

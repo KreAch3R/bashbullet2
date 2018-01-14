@@ -18,7 +18,6 @@ Bashbullet2
 ### Prerequisite:   
 	libnotify   
 	websocketpp  
-	cpprestsdk  
 	curl  
 	yad   
 	xclip (clipboard support)  
