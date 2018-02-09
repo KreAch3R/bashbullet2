@@ -11,6 +11,7 @@ Bashbullet2
 ### Feature :   
 	receive, send, mirror pushes and send files.   
 	send sms from bashbullet through phone.   
+	End to End encryption (Incoming)  
 	copy texts from phone's clipboard.   
 	copy links automatically.   
 	customizable script and notification.   
@@ -19,6 +20,7 @@ Bashbullet2
 	libnotify   
 	websocketpp  
 	curl  
+	openssl  
 	yad   
 	xclip (clipboard support)  
     

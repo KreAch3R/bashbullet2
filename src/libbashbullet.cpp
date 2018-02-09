@@ -10,6 +10,7 @@
 
 #include "misc.h"
 #include "puapi.h"
+#include "aead_aes_gcm.h"
 
 #include <websocketpp/config/asio_client.hpp>
 #include <websocketpp/client.hpp>
@@ -27,7 +28,7 @@ typedef websocketpp::config::asio_client::message_type::ptr message_ptr;
 int maxtitle=50, maxbody=160, loopcount=0;
 vector<string> target_whitelist;
 map<string,string> iden2devname;
-string pdir=getenv("HOME"), apikey, ftimestamp, timestamp, traypipe;
+string pdir=getenv("HOME"), apikey, ftimestamp, timestamp, traypipe, key="";
 bool systray=true, enable_sms_alert=false, enable_whitelist=false;
 
 void handler(Json::Value& M ){
@@ -94,10 +95,16 @@ void handler(Json::Value& M ){
         }else if( type == "push" ){
 		bool encrypted = M["push"]["encrypted"].asBool();
 		if( encrypted ){
-			cout << "encrypted message" << endl;
-			string cmds="echo |" +pdir + "handler/mirror.sh \"Bashbullet\" \"Warning\" \"End to End encryption is currently not supported\"";
-			system( cmds.c_str());
-			type = "dismissal";
+			cout << "decrypting message" << endl;
+			if( key == "" ){
+				string cmds="echo |" +pdir + "handler/mirror.sh \"Bashbullet\" \"ERROR\" \"End to End encryption is on, but decryption key is missing\"";
+				system( cmds.c_str());
+				type = "dismissal";
+			}else{
+				string dec = pushbullet_decrypt(key, M["push"]["ciphertext"].asString() );
+				M["push"] = str_json( dec );
+				type = M["push"]["type"].asString();
+			}
 		}else{
 			type = M["push"]["type"].asString();
 		}
@@ -158,6 +165,14 @@ int main() {
 	if( apikey == "" ){
 		cout << " Access-Token is missing, stopping now. \n";
 		return 0;
+	}
+	if( ! JStmp["key"].isNull() ){
+		key = JStmp["key"].asString();
+		if( key != "" ){
+			Json::Value USR = str_json( get_user_iden(apikey) );
+			cout << key << ' ' << USR["iden"].asString() << endl;
+			key = pushbullet_key(key, USR["iden"].asString() );
+		}
 	}
 	if( ! JStmp["title_max_length"].isNull() ) maxtitle=stoi( JStmp["title_max_length"].asString() );
 	if( ! JStmp["body_max_length"].isNull() ) maxbody=stoi( JStmp["body_max_length"].asString() );

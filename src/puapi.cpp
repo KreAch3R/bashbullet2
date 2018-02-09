@@ -51,3 +51,7 @@ string get_devices(string apikey){
 	string url="https://api.pushbullet.com/v2/devices?active=true";
 	return get_raw_json(apikey, url);
 }
+string get_user_iden(string apikey){
+	string url="https://api.pushbullet.com/v2/users/me";
+	return get_raw_json(apikey, url);
+}

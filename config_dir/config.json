@@ -4,6 +4,7 @@
 	"body_max_length":"160",
 	"enable_sms_alert":false,
 	"enable_whitelist":false,
+	"key":"",
 	"target_whitelist":[
 		"ALL", "bashbullet", "Name of My phone", "ALL means target is unspecified"
 	]

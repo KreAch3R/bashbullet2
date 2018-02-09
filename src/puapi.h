@@ -9,4 +9,5 @@ string get_pushes(string,string);
 
 string get_cursor_devices(string,string);
 string get_devices(string);
+string get_user_iden(string apikey);
 
