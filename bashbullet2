@@ -1,5 +1,20 @@
 #!/bin/bash
 
+# wait for internet connection to avoid freeze on https://github.com/Boteium/bashbullet2/blob/master/src/libbashbullet.cpp#L193
+while :
+do
+    pingtime=$(ping -w 1 8.8.8.8 2>/dev/null | grep "ttl")
+    if [ "$pingtime" = "" ]; then
+        pingtimetwo=$(ping -w 1 www.google.com 2>/dev/null | grep "ttl")
+        if [ "$pingtimetwo" != "" ]; then
+            break;
+        fi
+    else
+        break;
+    fi
+    sleep 1
+done
+
 # initialize yad systray icon
 PIPE="$HOME/.bashbullet2/.systray_pipe"
 if [ -e "$PIPE" ];then
