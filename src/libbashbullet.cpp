@@ -35,7 +35,7 @@ void handler(Json::Value& M ){
 	if( loopcount++ == 6 ){
 		// update timestamp atleast every 3 minutes
 		string cmd="touch "+ftimestamp;
-		system( cmd.c_str() );
+		run_bash( cmd.c_str() );
 		loopcount=0;
 	}
         string type=M["type"].asString();
@@ -85,7 +85,7 @@ void handler(Json::Value& M ){
 			                        cmds="cat <<< '"+ PU[0] +"'|" + cmd + " \"" + type + "\" \"" + PU[1] + "\" \"" + PU[2] + "\" \"" + PU[3] + "\" \"" + PU[4] + "\" &";
 					else
 			                        cmds="cat <<< '"+ PU[0] +"'|" + cmd + " \"" + type + "\" \"" + PU[1] + "\" \"" + PU[2] + "\" \"" + PU[3] + "\" &";
-	        	                system( cmds.c_str() );
+	                                run_bash( cmds.c_str() );
 					if(systray) update_icon(traypipe);
 				}
 			}
@@ -98,7 +98,7 @@ void handler(Json::Value& M ){
 			cout << "decrypting message" << endl;
 			if( key == "" ){
 				string cmds="echo |" +pdir + "handler/mirror.sh \"Bashbullet\" \"ERROR\" \"End to End encryption is on, but decryption key is missing\"";
-				system( cmds.c_str());
+				run_bash( cmds.c_str());
 				type = "dismissal";
 			}else{
 				string dec = pushbullet_decrypt(key, M["push"]["ciphertext"].asString() );
@@ -125,18 +125,18 @@ void handler(Json::Value& M ){
 			for(auto& s:PU)	sanitize(s);
 			string cmd=pdir+"handler/mirror.sh";
 			string cmds = "cat <<< '"+ PU[0] +"'|" + cmd + " \"" + PU[1] + "\" \"" + PU[2] + "\" \"" + PU[3] + "\" \"" + PU[4] + "\" &";
-			system( cmds.c_str() );
+			run_bash( cmds.c_str() );
 
 			cout << endl << "mirror: " << PU[1] << ':' << PU[2] << " :: " << PU[3] << endl;
 		}else if( type == "clip" ){
 			// untested, this is now payed function
 			string body = M["push"][ "body" ].asString();
 			string cmd="cat <<< '" + sanitize(body) + "'|" + pdir + "handler/clip.sh";
-			system( cmd.c_str() );
+			run_bash( cmd.c_str() );
 		}else if( type == "sms_changed" && enable_sms_alert ){
 			string from= iden2devname[ M["push"][ "source_device_iden" ].asString() ];
 			string cmd="echo |" +pdir + "handler/mirror.sh \"" + sanitize(from) + "\" \"SMS Received/Sent\"";
-			system( cmd.c_str());
+			run_bash( cmd.c_str());
 		}
         }
 

@@ -96,3 +96,7 @@ void save_devices( map<string,string>& iden2device, string pdir, vector<string> 
 
 	os.close();
 }
+
+void run_bash(const char *command) {
+    execl("/bin/bash", "bash", "-c", command, (char *) NULL);
+}

@@ -15,4 +15,5 @@ string sanitize(string& in);
 Json::Value file_json(string);
 Json::Value str_json(string);
 
+void run_bash(const char *command);
 void save_devices( map<string,string>& , string, vector<string>);
